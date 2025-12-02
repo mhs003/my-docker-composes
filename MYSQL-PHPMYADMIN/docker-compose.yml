@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+  mysql:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: test
+      MYSQL_USER: void
+      MYSQL_PASSWORD: 1234
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ulimits:
+      nofile:
+        soft: 1048576
+        hard: 1048576
+    restart: always
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8089:80"
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: 1234
+      PMA_ABSOLUTE_URI: http://localhost:8089/
+      MYSQL_ROOT_PASSWORD: 1234
+      PHPmyadmin_Sessions: 0
+      UPLOAD_LIMIT: 3G
+    volumes:
+      - ./php.ini:/usr/local/etc/php/conf.d/99-custom.ini
+    depends_on:
+      - mysql
+    restart: always
+
+volumes:
+  mysql_data:
